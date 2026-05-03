@@ -643,13 +643,20 @@ function toggleMute() {
 let audioCtx = null;
 
 function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!audioCtx) {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      return null;
+    }
+  }
   return audioCtx;
 }
 
 function playTone(frequency, duration, volume = 0.4, type = 'sine') {
   if (muted) return;
   const ctx = getAudioCtx();
+  if (!ctx) return;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   osc.connect(gain);
@@ -660,6 +667,7 @@ function playTone(frequency, duration, volume = 0.4, type = 'sine') {
   gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
   osc.start(ctx.currentTime);
   osc.stop(ctx.currentTime + duration);
+  osc.addEventListener('ended', () => osc.disconnect());
 }
 
 // Short double-beep warning — fires when remaining <= 3

@@ -640,9 +640,45 @@ function toggleMute() {
   document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔔';
 }
 
-function playStartBeep() {}
-function playWarningBeep() {}
-function playCompletionSequence() {}
+let audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(frequency, duration, volume = 0.4, type = 'sine') {
+  if (muted) return;
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = type;
+  osc.frequency.value = frequency;
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + duration);
+}
+
+// Short double-beep warning — fires when remaining <= 3
+function playWarningBeep() {
+  playTone(880, 0.12, 0.3);
+  setTimeout(() => playTone(880, 0.12, 0.3), 180);
+}
+
+// Single clean tone — fires at the start of a new interval
+function playStartBeep() {
+  playTone(660, 0.35, 0.5);
+}
+
+// Three ascending tones — workout complete
+function playCompletionSequence() {
+  playTone(523, 0.25, 0.5); // C5
+  setTimeout(() => playTone(659, 0.25, 0.5), 300); // E5
+  setTimeout(() => playTone(784, 0.4,  0.5), 600); // G5
+}
   </script>
 </body>
 </html>

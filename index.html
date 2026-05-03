@@ -459,22 +459,6 @@ function startWorkout() {
   document.getElementById('timer').classList.add('active');
 }
 
-populatePicker();
-loadSoundSettings();
-
-// Returns "60s" for <=90s, "2 min" for anything longer
-function formatDuration(seconds) {
-  if (seconds <= 90) return `${seconds}s`;
-  return `${Math.round(seconds / 60)} min`;
-}
-
-// Returns "MM:SS" for the countdown clock
-function formatCountdown(seconds) {
-  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-  const s = (seconds % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
-
 let soundSettings = { style: 'sine', volume: 0.5 };
 
 function loadSoundSettings() {
@@ -492,6 +476,22 @@ function saveSoundSettings() {
   try {
     localStorage.setItem('c25k_sound', JSON.stringify(soundSettings));
   } catch (e) {}
+}
+
+populatePicker();
+loadSoundSettings();
+
+// Returns "60s" for <=90s, "2 min" for anything longer
+function formatDuration(seconds) {
+  if (seconds <= 90) return `${seconds}s`;
+  return `${Math.round(seconds / 60)} min`;
+}
+
+// Returns "MM:SS" for the countdown clock
+function formatCountdown(seconds) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
 }
 
 let session         = [];   // array of { type, duration }

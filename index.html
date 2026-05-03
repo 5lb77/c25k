@@ -636,7 +636,28 @@ function saveSoundSettings() {
   } catch (e) {}
 }
 
-function initSettingsView() { /* stub — implemented in Task 4 */ }
+function initSettingsView() {
+  const slider = document.getElementById('volume-slider');
+  slider.value = soundSettings.volume;
+  document.getElementById('volume-display').textContent =
+    Math.round(soundSettings.volume * 100) + '%';
+  document.querySelectorAll('input[name="sound-style"]').forEach(r => {
+    r.checked = r.value === soundSettings.style;
+  });
+}
+
+function onVolumeChange(value) {
+  soundSettings.volume = parseFloat(value);
+  document.getElementById('volume-display').textContent =
+    Math.round(soundSettings.volume * 100) + '%';
+  saveSoundSettings();
+}
+
+function onStyleChange(value) {
+  soundSettings.style = value;
+  saveSoundSettings();
+}
+
 function testSound() { /* stub — implemented in Task 6 */ }
 
 populatePicker();

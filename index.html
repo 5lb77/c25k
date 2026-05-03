@@ -460,6 +460,148 @@ function startWorkout() {
 }
 
 populatePicker();
+
+// Returns "60s" for <=90s, "2 min" for anything longer
+function formatDuration(seconds) {
+  if (seconds <= 90) return `${seconds}s`;
+  return `${Math.round(seconds / 60)} min`;
+}
+
+// Returns "MM:SS" for the countdown clock
+function formatCountdown(seconds) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+let session       = [];   // array of { type, duration }
+let intervalIdx   = 0;    // index into session
+let remaining     = 0;    // seconds left in current interval
+let totalDuration = 0;    // total session seconds (for progress bar)
+let elapsed       = 0;    // seconds elapsed in total session
+let playing       = false;
+let ticker        = null; // setInterval handle
+let startedAt     = null; // Date.now() at last resume (for drift correction)
+let muted         = false;
+
+const ACCENT_CLASSES  = { warmup: 'accent-warmup', run: 'accent-run', walk: 'accent-walk', cooldown: 'accent-cooldown' };
+const BAR_CLASSES     = { warmup: 'bar-warmup',    run: 'bar-run',    walk: 'bar-walk',    cooldown: 'bar-cooldown'    };
+const INTERVAL_LABELS = { warmup: 'WARM UP', run: 'RUN', walk: 'WALK', cooldown: 'COOL DOWN' };
+
+function initTimer(week, day) {
+  session       = getSession(week, day);
+  totalDuration = session.reduce((sum, s) => sum + s.duration, 0);
+  intervalIdx   = 0;
+  elapsed       = 0;
+  remaining     = session[0].duration;
+  playing       = false;
+  clearInterval(ticker);
+  ticker        = null;
+
+  document.getElementById('session-label').textContent = `Week ${week} · Day ${day}`;
+  document.getElementById('complete-msg').classList.add('hidden');
+  document.getElementById('play-btn').textContent = 'Start';
+  renderInterval();
+}
+
+function renderInterval() {
+  const seg = session[intervalIdx];
+
+  // Interval label + color
+  const label = document.getElementById('interval-label');
+  label.textContent = INTERVAL_LABELS[seg.type];
+  label.className = 'interval-label ' + ACCENT_CLASSES[seg.type];
+
+  // Countdown
+  document.getElementById('countdown').textContent = formatCountdown(remaining);
+
+  // Progress bar
+  const pct = totalDuration > 0 ? (elapsed / totalDuration) * 100 : 0;
+  const bar = document.getElementById('progress-bar');
+  bar.style.width = pct + '%';
+  bar.className = 'progress-bar-fill ' + BAR_CLASSES[seg.type];
+
+  // Up next
+  const next = session[intervalIdx + 1];
+  const upNextEl = document.getElementById('up-next');
+  if (next) {
+    upNextEl.textContent = `Up next: ${INTERVAL_LABELS[next.type]} — ${formatDuration(next.duration)}`;
+  } else {
+    upNextEl.textContent = 'Last interval!';
+  }
+}
+
+function tick() {
+  // Drift correction: recompute remaining from wall clock
+  const now = Date.now();
+  const wallElapsed = Math.floor((now - startedAt) / 1000);
+  const tickRemaining = remaining - wallElapsed;
+  startedAt = now;
+
+  if (tickRemaining <= 0) {
+    elapsed += remaining;
+    intervalIdx++;
+    if (intervalIdx >= session.length) {
+      finishWorkout();
+      return;
+    }
+    remaining = session[intervalIdx].duration;
+    playStartBeep();
+  } else {
+    remaining = tickRemaining;
+    if (remaining === 3) playWarningBeep();
+  }
+
+  renderInterval();
+}
+
+function togglePlay() {
+  if (playing) {
+    clearInterval(ticker);
+    ticker = null;
+    playing = false;
+    document.getElementById('play-btn').textContent = 'Resume';
+  } else {
+    startedAt = Date.now();
+    ticker = setInterval(tick, 1000);
+    playing = true;
+    document.getElementById('play-btn').textContent = 'Pause';
+  }
+}
+
+function resetTimer() {
+  clearInterval(ticker);
+  ticker   = null;
+  playing  = false;
+  const week = parseInt(document.getElementById('week-select').value);
+  const day  = parseInt(document.getElementById('day-select').value);
+  initTimer(week, day);
+}
+
+function goBack() {
+  clearInterval(ticker);
+  ticker  = null;
+  playing = false;
+  showPicker();
+}
+
+function finishWorkout() {
+  clearInterval(ticker);
+  ticker  = null;
+  playing = false;
+  playCompletionSequence();
+  document.getElementById('complete-msg').classList.remove('hidden');
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && playing) {
+    startedAt = Date.now();
+  }
+});
+
+function playStartBeep() {}
+function playWarningBeep() {}
+function playCompletionSequence() {}
   </script>
 </body>
 </html>

@@ -93,6 +93,152 @@
     }
 
     #start-btn:hover { background: #f48c06; }
+
+    /* === Timer layout === */
+    #timer {
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1rem;
+    }
+
+    .timer-topbar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+    }
+
+    .back-btn, .mute-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.4rem 0.6rem;
+    }
+
+    .back-btn:hover, .mute-btn:hover { color: #f0f0f0; }
+
+    #session-label {
+      font-size: 0.85rem;
+      color: #888;
+      letter-spacing: 0.05em;
+    }
+
+    /* === Timer main === */
+    .timer-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .interval-label {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .countdown {
+      font-size: 20vw;
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .progress-bar-track {
+      width: 90%;
+      max-width: 400px;
+      height: 6px;
+      background: #2a2a2a;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 3px;
+      transition: width 0.9s linear;
+    }
+
+    .up-next {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    /* === Controls === */
+    .timer-controls {
+      width: 100%;
+      display: flex;
+      gap: 0.75rem;
+      padding: 1rem 0 2rem;
+    }
+
+    .btn-primary {
+      flex: 2;
+      padding: 1rem;
+      background: #e85d04;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-primary:hover { background: #f48c06; }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 1rem;
+      background: #2a2a2a;
+      color: #f0f0f0;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-secondary:hover { background: #333; }
+
+    /* === Completion message === */
+    .complete-msg {
+      position: absolute;
+      inset: 0;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .complete-msg .btn-primary { width: 60%; }
+
+    /* === Utility === */
+    .hidden { display: none !important; }
+
+    /* === Interval accent colors === */
+    .accent-warmup   { color: #f4a261; }
+    .accent-run      { color: #e85d04; }
+    .accent-walk     { color: #4a9eff; }
+    .accent-cooldown { color: #52b788; }
+
+    .bar-warmup   { background: #f4a261; }
+    .bar-run      { background: #e85d04; }
+    .bar-walk     { background: #4a9eff; }
+    .bar-cooldown { background: #52b788; }
   </style>
 </head>
 <body>
@@ -119,7 +265,30 @@
 
   <!-- Timer view -->
   <div id="timer">
-    <p>Timer goes here</p>
+    <div class="timer-topbar">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <span id="session-label">Week 1 · Day 1</span>
+      <button class="mute-btn" id="mute-btn" onclick="toggleMute()">🔔</button>
+    </div>
+
+    <div class="timer-main">
+      <div id="interval-label" class="interval-label">WARM UP</div>
+      <div id="countdown" class="countdown">05:00</div>
+      <div class="progress-bar-track">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+      <div id="up-next" class="up-next">Up next: Run — 60s</div>
+    </div>
+
+    <div class="timer-controls">
+      <button id="reset-btn" class="btn-secondary" onclick="resetTimer()">Reset</button>
+      <button id="play-btn" class="btn-primary" onclick="togglePlay()">Start</button>
+    </div>
+
+    <div id="complete-msg" class="complete-msg hidden">
+      <p>Done! Great run.</p>
+      <button class="btn-primary" onclick="goBack()">Back to Menu</button>
+    </div>
   </div>
 
   <script>

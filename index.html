@@ -110,6 +110,8 @@
       font-size: 1rem;
       cursor: pointer;
       padding: 0.4rem 0.6rem;
+      min-width: 44px;
+      min-height: 44px;
     }
 
     .back-btn:hover, .mute-btn:hover { color: #f0f0f0; }
@@ -625,7 +627,9 @@ function loadSoundSettings() {
     if (stored) {
       const parsed = JSON.parse(stored);
       if (typeof parsed.volume === 'number') soundSettings.volume = parsed.volume;
-      if (typeof parsed.style === 'string') soundSettings.style = parsed.style;
+      const VALID_STYLES = ['sine', 'square', 'triangle', 'speech-terse', 'speech-fulsome'];
+      if (typeof parsed.style === 'string' && VALID_STYLES.includes(parsed.style))
+        soundSettings.style = parsed.style;
     }
   } catch (e) {}
 }

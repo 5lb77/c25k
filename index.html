@@ -460,6 +460,7 @@ function startWorkout() {
 }
 
 populatePicker();
+loadSoundSettings();
 
 // Returns "60s" for <=90s, "2 min" for anything longer
 function formatDuration(seconds) {
@@ -472,6 +473,25 @@ function formatCountdown(seconds) {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
   const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
+}
+
+let soundSettings = { style: 'sine', volume: 0.5 };
+
+function loadSoundSettings() {
+  try {
+    const stored = localStorage.getItem('c25k_sound');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (typeof parsed.volume === 'number') soundSettings.volume = parsed.volume;
+      if (typeof parsed.style === 'string') soundSettings.style = parsed.style;
+    }
+  } catch (e) {}
+}
+
+function saveSoundSettings() {
+  try {
+    localStorage.setItem('c25k_sound', JSON.stringify(soundSettings));
+  } catch (e) {}
 }
 
 let session         = [];   // array of { type, duration }

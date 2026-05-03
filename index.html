@@ -666,6 +666,7 @@ function getAudioCtx() {
       return null;
     }
   }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
 

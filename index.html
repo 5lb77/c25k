@@ -610,7 +610,7 @@ function tick() {
     remainingAtResume     = remaining;
     elapsedAtResume       = elapsed;
     warnedThisInterval    = false;
-    playStartBeep();
+    playStartBeep(session[intervalIdx].type);
   } else {
     remaining = currentRemaining;
     elapsed   = elapsedAtResume + secondsSinceResume;
@@ -698,6 +698,7 @@ function toggleMute() {
 let audioCtx = null;
 
 function speak(text) {
+  if (!text) return;
   if (muted) return;
   if (!('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
@@ -742,20 +743,42 @@ function playTone(frequency, duration, volume = 0.4, type = 'sine') {
 
 // Short double-beep warning — fires when remaining <= 3
 function playWarningBeep() {
-  playTone(880, 0.12, 0.3);
-  setTimeout(() => playTone(880, 0.12, 0.3), 180);
+  if (muted) return;
+  const style = soundSettings.style;
+  if (style === 'speech-terse' || style === 'speech-fulsome') {
+    speak(SPEECH_CUES[style === 'speech-terse' ? 'terse' : 'fulsome'].warning);
+  } else {
+    playTone(880, 0.12, soundSettings.volume, style);
+    setTimeout(() => playTone(880, 0.12, soundSettings.volume, style), 180);
+  }
 }
 
 // Single clean tone — fires at the start of a new interval
-function playStartBeep() {
-  playTone(660, 0.35, 0.5);
+function playStartBeep(type) {
+  if (muted) return;
+  const style = soundSettings.style;
+  if (style === 'speech-terse' || style === 'speech-fulsome') {
+    speak(SPEECH_CUES[style === 'speech-terse' ? 'terse' : 'fulsome'][type] || '');
+  } else {
+    playTone(660, 0.35, soundSettings.volume, style);
+  }
 }
 
 // Three ascending tones — workout complete
 function playCompletionSequence() {
-  playTone(523, 0.25, 0.5); // C5
-  setTimeout(() => playTone(659, 0.25, 0.5), 300); // E5
-  setTimeout(() => playTone(784, 0.4,  0.5), 600); // G5
+  if (muted) return;
+  const style = soundSettings.style;
+  if (style === 'speech-terse' || style === 'speech-fulsome') {
+    speak(SPEECH_CUES[style === 'speech-terse' ? 'terse' : 'fulsome'].complete);
+  } else {
+    playTone(523, 0.25, soundSettings.volume, style);
+    setTimeout(() => playTone(659, 0.25, soundSettings.volume, style), 300);
+    setTimeout(() => playTone(784, 0.4,  soundSettings.volume, style), 600);
+  }
+}
+
+function testSound() {
+  playStartBeep('run');
 }
   </script>
 </body>

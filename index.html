@@ -26,13 +26,95 @@
     /* === Timer view === */
     #timer { display: none; flex-direction: column; align-items: center; width: 100%; min-height: 100vh; }
     #timer.active { display: flex; }
+
+    /* === Picker card === */
+    .picker-card {
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      width: 90%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .picker-card h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .picker-sub {
+      color: #888;
+      font-size: 0.9rem;
+      margin-top: -0.75rem;
+    }
+
+    .picker-row {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .picker-row label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+    }
+
+    .picker-row select {
+      background: #2a2a2a;
+      color: #f0f0f0;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    #start-btn {
+      margin-top: 0.5rem;
+      width: 100%;
+      padding: 0.9rem;
+      background: #e85d04;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    #start-btn:hover { background: #f48c06; }
   </style>
 </head>
 <body>
 
   <!-- Picker view -->
   <div id="picker">
-    <p>Picker goes here</p>
+    <div class="picker-card">
+      <h1>C25K Timer</h1>
+      <p class="picker-sub">Couch to 5K — 9 Week Plan</p>
+
+      <div class="picker-row">
+        <label for="week-select">Week</label>
+        <select id="week-select"></select>
+      </div>
+
+      <div class="picker-row">
+        <label for="day-select">Day</label>
+        <select id="day-select"></select>
+      </div>
+
+      <button id="start-btn" onclick="startWorkout()">Start Workout</button>
+    </div>
   </div>
 
   <!-- Timer view -->
@@ -166,6 +248,55 @@
 function getSession(week, day) {
   return SCHEDULE[(week - 1) * 3 + (day - 1)];
 }
+
+const WEEK_LABELS = Array.from({ length: 9 }, (_, i) => `Week ${i + 1}`);
+const DAY_LABELS = [
+  ['Day 1', 'Day 2', 'Day 3'],               // weeks 1-4, 6-9
+  ['Day 1', 'Day 2', 'Day 3 — 20 min run'],  // week 5
+];
+
+function populatePicker() {
+  const weekSel = document.getElementById('week-select');
+  const daySel  = document.getElementById('day-select');
+
+  WEEK_LABELS.forEach((label, i) => {
+    const opt = document.createElement('option');
+    opt.value = i + 1;
+    opt.textContent = label;
+    weekSel.appendChild(opt);
+  });
+
+  weekSel.addEventListener('change', () => updateDayOptions());
+  updateDayOptions();
+}
+
+function updateDayOptions() {
+  const week = parseInt(document.getElementById('week-select').value);
+  const daySel = document.getElementById('day-select');
+  daySel.innerHTML = '';
+  const labels = week === 5 ? DAY_LABELS[1] : DAY_LABELS[0];
+  labels.forEach((label, i) => {
+    const opt = document.createElement('option');
+    opt.value = i + 1;
+    opt.textContent = label;
+    daySel.appendChild(opt);
+  });
+}
+
+function showPicker() {
+  document.getElementById('picker').classList.remove('hidden');
+  document.getElementById('timer').classList.remove('active');
+}
+
+function startWorkout() {
+  const week = parseInt(document.getElementById('week-select').value);
+  const day  = parseInt(document.getElementById('day-select').value);
+  initTimer(week, day); // defined in Task 5
+  document.getElementById('picker').classList.add('hidden');
+  document.getElementById('timer').classList.add('active');
+}
+
+populatePicker();
   </script>
 </body>
 </html>

@@ -508,6 +508,25 @@ let elapsedAtResume     = 0;
 let warnedThisInterval  = false;
 let wakeLock            = null;
 
+const SPEECH_CUES = {
+  terse: {
+    run:      'Run.',
+    walk:     'Walk.',
+    warmup:   'Warm up.',
+    cooldown: 'Cool down.',
+    warning:  'Ready.',
+    complete: 'Done.',
+  },
+  fulsome: {
+    run:      'Beginning run interval.',
+    walk:     'Walk interval. Recover.',
+    warmup:   'Begin your warm-up.',
+    cooldown: 'Time to cool down.',
+    warning:  'Interval ending in three seconds.',
+    complete: 'Workout complete. Outstanding effort.',
+  },
+};
+
 const ACCENT_CLASSES  = { warmup: 'accent-warmup', run: 'accent-run', walk: 'accent-walk', cooldown: 'accent-cooldown' };
 const BAR_CLASSES     = { warmup: 'bar-warmup',    run: 'bar-run',    walk: 'bar-walk',    cooldown: 'bar-cooldown'    };
 const INTERVAL_LABELS = { warmup: 'WARM UP', run: 'RUN', walk: 'WALK', cooldown: 'COOL DOWN' };
@@ -677,6 +696,20 @@ function toggleMute() {
 }
 
 let audioCtx = null;
+
+function speak(text) {
+  if (muted) return;
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.volume = soundSettings.volume;
+  const voices = speechSynthesis.getVoices();
+  const voice = voices.find(v => v.name === 'Samantha')
+    || voices.find(v => v.lang.startsWith('en'))
+    || null;
+  if (voice) utter.voice = voice;
+  speechSynthesis.speak(utter);
+}
 
 function getAudioCtx() {
   if (!audioCtx) {

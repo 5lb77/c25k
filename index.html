@@ -220,6 +220,109 @@
 
     .complete-msg .btn-primary { width: 60%; }
 
+    /* === Settings view === */
+    #settings {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      padding: 2rem 0;
+    }
+
+    .settings-card { gap: 1.5rem; }
+
+    .settings-topbar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .settings-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .settings-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .settings-row label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+    }
+
+    #volume-display { color: #f0f0f0; }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #e85d04;
+      cursor: pointer;
+      height: 1.5rem;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: #2a2a2a;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #f0f0f0;
+    }
+
+    .radio-option input[type="radio"] {
+      accent-color: #e85d04;
+      width: 1.1rem;
+      height: 1.1rem;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .picker-topbar {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .gear-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+      line-height: 1;
+    }
+
+    .gear-btn:hover { color: #f0f0f0; }
+
     /* === Utility === */
     .hidden { display: none !important; }
 

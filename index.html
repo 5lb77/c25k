@@ -627,9 +627,11 @@ document.addEventListener('visibilitychange', () => {
   if (!document.hidden && playing) {
     // Tab came back — run an immediate catch-up tick, then reset the resume anchor
     tick();
-    startedAt         = Date.now();
-    remainingAtResume = remaining;
-    elapsedAtResume   = elapsed;
+    if (playing) { // tick() may have called finishWorkout(), setting playing = false
+      startedAt         = Date.now();
+      remainingAtResume = remaining;
+      elapsedAtResume   = elapsed;
+    }
   }
 });
 

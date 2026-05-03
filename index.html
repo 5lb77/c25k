@@ -240,6 +240,9 @@
   <!-- Picker view -->
   <div id="picker">
     <div class="picker-card">
+      <div class="picker-topbar">
+        <button class="gear-btn" onclick="showSettings()" title="Sound Settings">⚙</button>
+      </div>
       <h1>C25K Timer</h1>
       <p class="picker-sub">Couch to 5K — 9 Week Plan</p>
 
@@ -254,6 +257,46 @@
       </div>
 
       <button id="start-btn" onclick="startWorkout()">Start Workout</button>
+    </div>
+  </div>
+
+  <!-- Settings view -->
+  <div id="settings" class="hidden">
+    <div class="picker-card settings-card">
+      <div class="settings-topbar">
+        <button class="back-btn" onclick="showPicker()">← Back</button>
+        <span class="settings-title">Sound Settings</span>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-row">
+          <label for="volume-slider">Volume <span id="volume-display">50%</span></label>
+        </div>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5"
+               oninput="onVolumeChange(this.value)">
+        <button id="test-sound-btn" class="btn-secondary" onclick="testSound()">Test Sound</button>
+      </div>
+
+      <div class="settings-section">
+        <label class="section-label">Sound Style</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="sound-style" value="sine" onchange="onStyleChange(this.value)"> Tone — Smooth
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="sound-style" value="square" onchange="onStyleChange(this.value)"> Tone — Digital
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="sound-style" value="triangle" onchange="onStyleChange(this.value)"> Tone — Soft
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="sound-style" value="speech-terse" onchange="onStyleChange(this.value)"> Voice — Terse
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="sound-style" value="speech-fulsome" onchange="onStyleChange(this.value)"> Voice — Fulsome
+          </label>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -448,7 +491,14 @@ function updateDayOptions() {
 
 function showPicker() {
   document.getElementById('picker').classList.remove('hidden');
+  document.getElementById('settings').classList.add('hidden');
   document.getElementById('timer').classList.remove('active');
+}
+
+function showSettings() {
+  initSettingsView();
+  document.getElementById('picker').classList.add('hidden');
+  document.getElementById('settings').classList.remove('hidden');
 }
 
 function startWorkout() {
@@ -477,6 +527,9 @@ function saveSoundSettings() {
     localStorage.setItem('c25k_sound', JSON.stringify(soundSettings));
   } catch (e) {}
 }
+
+function initSettingsView() { /* stub — implemented in Task 4 */ }
+function testSound() { /* stub — implemented in Task 6 */ }
 
 populatePicker();
 loadSoundSettings();

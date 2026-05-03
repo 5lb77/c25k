@@ -41,7 +41,131 @@
   </div>
 
   <script>
-    // JS goes here
+    const SCHEDULE = [
+  // Week 1 — same all 3 days
+  ...[0,1,2].map(() => [
+    { type: 'warmup',   duration: 300 },
+    ...Array.from({ length: 8 }, () => [
+      { type: 'run',  duration: 60 },
+      { type: 'walk', duration: 90 },
+    ]).flat(),
+    { type: 'cooldown', duration: 300 },
+  ]),
+
+  // Week 2 — same all 3 days
+  ...[0,1,2].map(() => [
+    { type: 'warmup',   duration: 300 },
+    ...Array.from({ length: 6 }, () => [
+      { type: 'run',  duration: 90 },
+      { type: 'walk', duration: 120 },
+    ]).flat(),
+    { type: 'cooldown', duration: 300 },
+  ]),
+
+  // Week 3 — same all 3 days
+  ...[0,1,2].map(() => [
+    { type: 'warmup',   duration: 300 },
+    ...Array.from({ length: 2 }, () => [
+      { type: 'run',  duration: 90 },
+      { type: 'walk', duration: 90 },
+      { type: 'run',  duration: 180 },
+      { type: 'walk', duration: 180 },
+    ]).flat(),
+    { type: 'cooldown', duration: 300 },
+  ]),
+
+  // Week 4 — same all 3 days
+  ...[0,1,2].map(() => [
+    { type: 'warmup',   duration: 300 },
+    { type: 'run',  duration: 180 },
+    { type: 'walk', duration: 90 },
+    { type: 'run',  duration: 300 },
+    { type: 'walk', duration: 150 },
+    { type: 'run',  duration: 180 },
+    { type: 'walk', duration: 90 },
+    { type: 'run',  duration: 300 },
+    { type: 'cooldown', duration: 300 },
+  ]),
+
+  // Week 5, Day 1
+  [
+    { type: 'warmup',   duration: 300 },
+    ...Array.from({ length: 3 }, () => [
+      { type: 'run',  duration: 300 },
+      { type: 'walk', duration: 180 },
+    ]).flat(),
+    { type: 'cooldown', duration: 300 },
+  ],
+
+  // Week 5, Day 2
+  [
+    { type: 'warmup',   duration: 300 },
+    { type: 'run',  duration: 480 },
+    { type: 'walk', duration: 300 },
+    { type: 'run',  duration: 480 },
+    { type: 'cooldown', duration: 300 },
+  ],
+
+  // Week 5, Day 3
+  [
+    { type: 'warmup',   duration: 300 },
+    { type: 'run',  duration: 1200 },
+    { type: 'cooldown', duration: 300 },
+  ],
+
+  // Week 6, Day 1
+  [
+    { type: 'warmup',   duration: 300 },
+    { type: 'run',  duration: 300 },
+    { type: 'walk', duration: 180 },
+    { type: 'run',  duration: 480 },
+    { type: 'walk', duration: 180 },
+    { type: 'run',  duration: 300 },
+    { type: 'cooldown', duration: 300 },
+  ],
+
+  // Week 6, Day 2
+  [
+    { type: 'warmup',   duration: 300 },
+    { type: 'run',  duration: 600 },
+    { type: 'walk', duration: 180 },
+    { type: 'run',  duration: 600 },
+    { type: 'cooldown', duration: 300 },
+  ],
+
+  // Week 6, Day 3
+  [
+    { type: 'warmup',   duration: 300 },
+    { type: 'run',  duration: 1320 },
+    { type: 'cooldown', duration: 300 },
+  ],
+
+  // Week 7 — same all 3 days
+  ...[0,1,2].map(() => [
+    { type: 'warmup',   duration: 300 },
+    { type: 'run',  duration: 1500 },
+    { type: 'cooldown', duration: 300 },
+  ]),
+
+  // Week 8 — same all 3 days
+  ...[0,1,2].map(() => [
+    { type: 'warmup',   duration: 300 },
+    { type: 'run',  duration: 1680 },
+    { type: 'cooldown', duration: 300 },
+  ]),
+
+  // Week 9 — same all 3 days
+  ...[0,1,2].map(() => [
+    { type: 'warmup',   duration: 300 },
+    { type: 'run',  duration: 1800 },
+    { type: 'cooldown', duration: 300 },
+  ]),
+];
+// SCHEDULE is a flat array of 27 sessions (index 0 = W1D1, index 26 = W9D3)
+// getSession(week, day) where week and day are 1-indexed:
+function getSession(week, day) {
+  return SCHEDULE[(week - 1) * 3 + (day - 1)];
+}
   </script>
 </body>
 </html>

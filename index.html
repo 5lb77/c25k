@@ -678,25 +678,6 @@ function formatCountdown(seconds) {
   return `${m}:${s}`;
 }
 
-let soundSettings = { style: 'sine', volume: 0.5 };
-
-function loadSoundSettings() {
-  try {
-    const stored = localStorage.getItem('c25k_sound');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (typeof parsed.volume === 'number') soundSettings.volume = parsed.volume;
-      if (typeof parsed.style === 'string') soundSettings.style = parsed.style;
-    }
-  } catch (e) {}
-}
-
-function saveSoundSettings() {
-  try {
-    localStorage.setItem('c25k_sound', JSON.stringify(soundSettings));
-  } catch (e) {}
-}
-
 let session         = [];   // array of { type, duration }
 let intervalIdx     = 0;    // index into session
 let remaining       = 0;    // seconds left in current interval

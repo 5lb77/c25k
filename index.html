@@ -486,6 +486,7 @@ let muted           = false;
 let remainingAtResume   = 0;
 let elapsedAtResume     = 0;
 let warnedThisInterval  = false;
+let wakeLock            = null;
 
 const ACCENT_CLASSES  = { warmup: 'accent-warmup', run: 'accent-run', walk: 'accent-walk', cooldown: 'accent-cooldown' };
 const BAR_CLASSES     = { warmup: 'bar-warmup',    run: 'bar-run',    walk: 'bar-walk',    cooldown: 'bar-cooldown'    };
@@ -583,11 +584,22 @@ function tick() {
   renderInterval();
 }
 
+async function acquireWakeLock() {
+  if ('wakeLock' in navigator) {
+    try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release(); wakeLock = null; }
+}
+
 function togglePlay() {
   if (playing) {
     clearInterval(ticker);
     ticker = null;
     playing = false;
+    releaseWakeLock();
     document.getElementById('play-btn').textContent = 'Resume';
   } else {
     startedAt         = Date.now();
@@ -595,6 +607,7 @@ function togglePlay() {
     elapsedAtResume   = elapsed;
     ticker = setInterval(tick, 1000);
     playing = true;
+    acquireWakeLock();
     document.getElementById('play-btn').textContent = 'Pause';
   }
 }
@@ -612,6 +625,7 @@ function goBack() {
   clearInterval(ticker);
   ticker  = null;
   playing = false;
+  releaseWakeLock();
   showPicker();
 }
 
@@ -619,6 +633,7 @@ function finishWorkout() {
   clearInterval(ticker);
   ticker  = null;
   playing = false;
+  releaseWakeLock();
   playCompletionSequence();
   document.getElementById('complete-msg').classList.remove('hidden');
 }
@@ -631,6 +646,7 @@ document.addEventListener('visibilitychange', () => {
       startedAt         = Date.now();
       remainingAtResume = remaining;
       elapsedAtResume   = elapsed;
+      acquireWakeLock(); // wake lock is released automatically when page hides; re-acquire on return
     }
   }
 });

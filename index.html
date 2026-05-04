@@ -874,7 +874,8 @@ function togglePlay() {
     releaseWakeLock();
     document.getElementById('play-btn').textContent = 'Resume';
   } else {
-    getAudioCtx(); // iOS requires AudioContext creation/resume inside a user gesture
+    getAudioCtx();   // iOS requires AudioContext creation/resume inside a user gesture
+    unlockSpeech();  // same requirement for speechSynthesis
     startedAt         = Date.now();
     remainingAtResume = remaining;
     elapsedAtResume   = elapsed;
@@ -931,7 +932,16 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-// Any tap recreates or resumes AudioContext (the user gesture iOS requires) and dismisses the banner
+function unlockSpeech() {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(' ');
+  utter.volume = 0;
+  speechSynthesis.speak(utter);
+}
+
+// Any tap recreates or resumes AudioContext and re-unlocks speechSynthesis
+// (both APIs require a direct user gesture on iOS; touchstart qualifies)
 document.addEventListener('touchstart', () => {
   if (audioCtx && audioCtx.state === 'suspended') {
     // Side-button lock can permanently kill the context; discard and recreate fresh
@@ -939,6 +949,7 @@ document.addEventListener('touchstart', () => {
     audioCtx = null;
   }
   getAudioCtx();
+  unlockSpeech();
   const banner = document.getElementById('audio-restore-banner');
   if (!banner.classList.contains('hidden')) {
     banner.classList.add('hidden');

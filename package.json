@@ -1,0 +1,10 @@
+{
+  "name": "c25k",
+  "version": "1.0.0",
+  "scripts": {
+    "generate-icons": "node generate-icons.js"
+  },
+  "devDependencies": {
+    "pngjs": "^7.0.0"
+  }
+}

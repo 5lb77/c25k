@@ -224,6 +224,20 @@
 
     .btn-secondary:hover { background: #333; }
 
+    /* === Audio restore banner === */
+    #audio-restore-banner {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(232, 93, 4, 0.95);
+      color: #fff;
+      text-align: center;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 100;
+      cursor: pointer;
+    }
+
     /* === Completion message === */
     .complete-msg {
       position: absolute;
@@ -364,6 +378,8 @@
   </style>
 </head>
 <body>
+
+  <div id="audio-restore-banner" class="hidden">Tap anywhere to restore audio</div>
 
   <!-- Picker view -->
   <div id="picker">
@@ -887,9 +903,10 @@ function finishWorkout() {
   document.getElementById('complete-msg').classList.remove('hidden');
 }
 
+let bannerTimer = null;
+
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && playing) {
-    getAudioCtx(); // iOS suspends AudioContext in background; attempt resume on return
     // Tab came back — run an immediate catch-up tick, then reset the resume anchor
     tick();
     if (playing) { // tick() may have called finishWorkout(), setting playing = false
@@ -897,14 +914,23 @@ document.addEventListener('visibilitychange', () => {
       remainingAtResume = remaining;
       elapsedAtResume   = elapsed;
       acquireWakeLock(); // wake lock is released automatically when page hides; re-acquire on return
+      // iOS needs a real user gesture to resume AudioContext — prompt the runner to tap
+      const banner = document.getElementById('audio-restore-banner');
+      banner.classList.remove('hidden');
+      clearTimeout(bannerTimer);
+      bannerTimer = setTimeout(() => banner.classList.add('hidden'), 6000);
     }
   }
 });
 
-// Safety net: re-unlock AudioContext on any tap (covers cases where visibilitychange
-// alone is insufficient on iOS — e.g. first touch after unlocking the screen)
+// Any tap resumes AudioContext (the user gesture iOS requires) and dismisses the banner
 document.addEventListener('touchstart', () => {
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  const banner = document.getElementById('audio-restore-banner');
+  if (!banner.classList.contains('hidden')) {
+    banner.classList.add('hidden');
+    clearTimeout(bannerTimer);
+  }
 }, { passive: true });
 
 function toggleMute() {

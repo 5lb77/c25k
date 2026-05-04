@@ -931,9 +931,14 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-// Any tap resumes AudioContext (the user gesture iOS requires) and dismisses the banner
+// Any tap recreates or resumes AudioContext (the user gesture iOS requires) and dismisses the banner
 document.addEventListener('touchstart', () => {
-  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  if (audioCtx && audioCtx.state === 'suspended') {
+    // Side-button lock can permanently kill the context; discard and recreate fresh
+    audioCtx.close().catch(() => {});
+    audioCtx = null;
+  }
+  getAudioCtx();
   const banner = document.getElementById('audio-restore-banner');
   if (!banner.classList.contains('hidden')) {
     banner.classList.add('hidden');
@@ -964,7 +969,7 @@ function speak(text) {
 }
 
 function getAudioCtx() {
-  if (!audioCtx) {
+  if (!audioCtx || audioCtx.state === 'closed') {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     } catch (e) {

@@ -1,0 +1,15 @@
+{
+  "name": "C25K Timer",
+  "short_name": "C25K",
+  "background_color": "#111111",
+  "theme_color": "#e85d04",
+  "display": "standalone",
+  "start_url": ".",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

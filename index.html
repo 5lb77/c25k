@@ -868,6 +868,7 @@ function finishWorkout() {
 
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && playing) {
+    getAudioCtx(); // iOS suspends AudioContext in background; attempt resume on return
     // Tab came back — run an immediate catch-up tick, then reset the resume anchor
     tick();
     if (playing) { // tick() may have called finishWorkout(), setting playing = false
@@ -878,6 +879,12 @@ document.addEventListener('visibilitychange', () => {
     }
   }
 });
+
+// Safety net: re-unlock AudioContext on any tap (covers cases where visibilitychange
+// alone is insufficient on iOS — e.g. first touch after unlocking the screen)
+document.addEventListener('touchstart', () => {
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}, { passive: true });
 
 function toggleMute() {
   muted = !muted;

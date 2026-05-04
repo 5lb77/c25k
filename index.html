@@ -829,6 +829,7 @@ function togglePlay() {
     releaseWakeLock();
     document.getElementById('play-btn').textContent = 'Resume';
   } else {
+    getAudioCtx(); // iOS requires AudioContext creation/resume inside a user gesture
     startedAt         = Date.now();
     remainingAtResume = remaining;
     elapsedAtResume   = elapsed;

@@ -120,6 +120,20 @@
 
     .back-btn:hover, .mute-btn:hover { color: #f0f0f0; }
 
+    .topbar-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .wake-indicator {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #52b788;
+    }
+
     #session-label {
       font-size: 0.85rem;
       color: #888;
@@ -418,7 +432,10 @@
   <div id="timer">
     <div class="timer-topbar">
       <button class="back-btn" onclick="goBack()">← Back</button>
-      <span id="session-label">Week 1 · Day 1</span>
+      <div class="topbar-center">
+        <span id="session-label">Week 1 · Day 1</span>
+        <span id="wake-indicator" class="wake-indicator hidden">☀ screen on</span>
+      </div>
       <button class="mute-btn" id="mute-btn" onclick="toggleMute()">🔔</button>
     </div>
 
@@ -813,12 +830,16 @@ function tick() {
 
 async function acquireWakeLock() {
   if ('wakeLock' in navigator) {
-    try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      document.getElementById('wake-indicator').classList.remove('hidden');
+    } catch (e) {}
   }
 }
 
 function releaseWakeLock() {
   if (wakeLock) { wakeLock.release(); wakeLock = null; }
+  document.getElementById('wake-indicator').classList.add('hidden');
 }
 
 function togglePlay() {
